@@ -28,26 +28,30 @@ CSV_COLUMNS = [
 # ── GitHub-Verbindung ─────────────────────────────────────────────
 
 def get_repo():
-    
-    def get_repo():
-        try:
-            token = st.secrets["GITHUB_TOKEN"].strip()
-            repo_name = st.secrets["GITHUB_REPO"].strip()
+    try:
+        token = st.secrets["GITHUB_TOKEN"].strip()
+        repo_name = st.secrets["GITHUB_REPO"].strip()
+        g = Github(token)
+        return g.get_repo(repo_name)
+    except Exception as e:
+        st.error(f"Fehler bei get_repo: {e}")
+        return None
+
+def load_csv_from_github(person: str) -> pd.DataFrame:
+    repo = get_repo()
+    if repo is None:
+        return pd.DataFrame(columns=CSV_COLUMNS)
         
-            g = Github(token)
-        
-        # Test 1: Funktioniert der Token überhaupt?
-            user_name = g.get_user().login
-            st.write(f"✅ Token ok! Eingeloggt als: {user_name}")
-        
-        # Test 2: Findet er das Repo?
-            repo = g.get_repo(repo_name)
-            st.write(f"✅ Repo gefunden: {repo.full_name}")
-        
-            return repo
-        except Exception as e:
-            st.error(f"❌ Fehler-Details: {e}")
-            st.stop() # Stoppt die App hier, damit wir den Fehler lesen
+    path = f"data/{person.lower()}.csv"
+    try:
+        # Versuche die Datei zu laden
+        file = repo.get_contents(path)
+        content = base64.b64decode(file.content).decode("utf-8")
+        df = pd.read_csv(io.StringIO(content), parse_dates=["date"])
+        return df
+    except Exception:
+        # Falls Datei oder Ordner nicht existieren, leeren DF zurückgeben
+        return pd.DataFrame(columns=CSV_COLUMNS)
    
 
 
