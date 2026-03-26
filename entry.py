@@ -29,16 +29,25 @@ CSV_COLUMNS = [
 
 def get_repo():
     
+    def get_repo():
     try:
-        token = st.secrets["GITHUB_TOKEN"]
-        repo_name = st.secrets["GITHUB_REPO"]
+        token = st.secrets["GITHUB_TOKEN"].strip()
+        repo_name = st.secrets["GITHUB_REPO"].strip()
+        
         g = Github(token)
-        return g.get_repo(repo_name)
+        
+        # Test 1: Funktioniert der Token überhaupt?
+        user_name = g.get_user().login
+        st.write(f"✅ Token ok! Eingeloggt als: {user_name}")
+        
+        # Test 2: Findet er das Repo?
+        repo = g.get_repo(repo_name)
+        st.write(f"✅ Repo gefunden: {repo.full_name}")
+        
+        return repo
     except Exception as e:
-        st.error(f"Konnte Verbindung zum GitHub-Repo nicht herstellen.")
-        st.info(f"Prüfe, ob 'GITHUB_REPO' in den Secrets korrekt als 'Nutzer/Repo' hinterlegt ist.")
-        # Wir werfen den Fehler für die Logs trotzdem weiter
-        raise e
+        st.error(f"❌ Fehler-Details: {e}")
+        st.stop() # Stoppt die App hier, damit wir den Fehler lesen
    
 
 
