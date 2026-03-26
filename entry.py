@@ -28,25 +28,11 @@ CSV_COLUMNS = [
 # ── GitHub-Verbindung ─────────────────────────────────────────────
 
 def get_repo():
-    token = st.secrets["GITHUB_TOKEN"].strip()
-    repo_name = st.secrets["GITHUB_REPO"].strip()
-    
+    token = st.secrets["GITHUB_TOKEN"]
+    repo_name = st.secrets["GITHUB_REPO"]
     g = Github(token)
-    
-    try:
-        # Test 1: Kann der Token sich überhaupt identifizieren?
-        user = g.get_user().login
-        print(f"DEBUG: Token gültig. Eingeloggt als {user}")
-        
-        # Test 2: Zugriff auf das Repo
-        repo = g.get_repo(repo_name)
-        print(f"DEBUG: Repo '{repo_name}' erfolgreich gefunden!")
-        return repo
-    except Exception as e:
-        print(f"DEBUG: FEHLER beim Zugriff auf '{repo_name}': {e}")
-        # Wir zeigen den Fehler auch kurz in der App an
-        st.error(f"GitHub-Fehler: {e}. Prüfe 'GITHUB_REPO' in den Secrets.")
-        raise e
+    repo = g.get_repo(repo_name)
+    return repo  # <--- Das ist entscheidend!
 
 def load_csv_from_github(person: str) -> pd.DataFrame:
     repo = get_repo()
