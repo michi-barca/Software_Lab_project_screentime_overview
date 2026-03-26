@@ -28,10 +28,18 @@ CSV_COLUMNS = [
 # ── GitHub-Verbindung ─────────────────────────────────────────────
 
 def get_repo():
-    token = st.secrets["GITHUB_TOKEN"]
-    repo_name = st.secrets["GITHUB_REPO"]
-    g = Github(token)
-    return g.get_repo(repo_name)
+    
+    try:
+        token = st.secrets["GITHUB_TOKEN"]
+        repo_name = st.secrets["GITHUB_REPO"]
+        g = Github(token)
+        return g.get_repo(repo_name)
+    except Exception as e:
+        st.error(f"Konnte Verbindung zum GitHub-Repo nicht herstellen.")
+        st.info(f"Prüfe, ob 'GITHUB_REPO' in den Secrets korrekt als 'Nutzer/Repo' hinterlegt ist.")
+        # Wir werfen den Fehler für die Logs trotzdem weiter
+        raise e
+   
 
 
 def load_csv_from_github(person: str) -> pd.DataFrame:
