@@ -1,0 +1,10 @@
+# Secrets niemals committen
+.streamlit/secrets.toml
+
+# Python
+__pycache__/
+*.pyc
+.env
+
+# macOS
+.DS_Store
