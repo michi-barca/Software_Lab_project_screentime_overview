@@ -86,3 +86,26 @@ with row2_col2:
     st.info("💡 Diese Woche: 5/7 Tage das Limit eingehalten!")
     # Als Platzhalter für die grünen Boxen:
     st.write("🟩 🟩 ⬜ 🟩 🟩 🟩 🟩")
+
+# Beispiel für die Logik in der app.py
+user_options = ["Henning", "Michi", "Nils", "Alle"]
+selected_user = st.sidebar.selectbox("User auswählen", user_options)
+
+if selected_user == "Alle":
+    st.header("👥 Team-Statistiken")
+
+    # 1. Gesamtzeit aller User summieren
+    total_team_time = df['Dauer_Minuten'].sum()
+    st.metric("Team Gesamtzeit", f"{total_team_time // 60}h {total_team_time % 60}m")
+
+    # 2. Vergleichs-Chart
+    # Wir gruppieren nach User UND Datum
+    team_compare = df.groupby(['User', 'Datum'])['Dauer_Minuten'].sum().reset_index()
+    fig = px.line(team_compare, x='Datum', y='Dauer_Minuten', color='User', title="Wer nutzt wie viel?")
+    st.plotly_chart(fig, use_container_width=True)
+
+else:
+    # Hier kommt euer bisheriger Code für den einzelnen User hin
+    st.header(f"📱 Statistik für {selected_user}")
+    user_df = df[df['User'] == selected_user]
+    # ... Rest des Dashboards
